@@ -10,19 +10,18 @@ import os
 def normalize(x):
     return x/(np.max(np.abs(x)))
 
-model = 'gullfaks/'
-
+model = 'barn/homo/'
 
 project = '/home/vegahag/msim-ext/AGU2017/'+model
 
 #part = 'hessian_'
-part = 'vp_8Hz-zdir-long'
+part = 'vp_8Hz-zdir-short'
 
 freq = ''
 #freq = '16Hz'
 #freq = '32Hz'
 
-pos  = '190'
+pos  = '70'
 
 hessians = ['H1', 'H2']
 params   = ['rh' , 'vp' , 'vs']
@@ -39,7 +38,8 @@ dx = 10
 
 nPlots = len(hessians)*len(params)*len(perturbs)
 
-toRead = folder+hessians[0]+'-'+params[0]+'-delta_'+perturbs[0]+'-z'+pos+'-x500.rsf'
+#toRead = folder+hessians[0]+'-'+params[0]+'-delta_'+perturbs[0]+'-z'+pos+'-x500.rsf'
+toRead = folder+hessians[0]+'-'+params[0]+'-delta_'+perturbs[0]+'-z'+pos+'-x350.rsf'
 print toRead
 fin   = rsf.Input(toRead)
 [n,m] = fin.shape()
@@ -59,7 +59,8 @@ for h in hessians:
     pit = 0
     for p in params:
         for d in perturbs:
-            fin   = rsf.Input(folder+h+'-'+p+'-delta_'+d+'-z'+pos+'-x500.rsf')
+            #fin   = rsf.Input(folder+h+'-'+p+'-delta_'+d+'-z'+pos+'-x500.rsf')
+            fin   = rsf.Input(folder+h+'-'+p+'-delta_'+d+'-z'+pos+'-x350.rsf')
             fin.read(data)
             model[:,:,it] = data.transpose()
             title += '$\\mathbf{H}^{'+paramTit[pit]+'}_{'+h[1:]+'}\\delta '+d+'_'+pos+'$'
@@ -93,18 +94,21 @@ for h in hessians:
             ax = pl.gca()
 
             image.set_cmap('seismic')
-            image.set_clim([-.05,.05])
+            #image.set_clim([-.05,.05])
+            image.set_clim([-.5,.5])
 
             ax.xaxis.tick_top()
             ax.xaxis.set_label_position('top')
 
             pl.xlabel("$x$ (m)")
-            pl.xticks([0,1000,2000,3000,4000])
-            pl.xlim(0,4000)
+            #pl.xticks([0,1000,2000,3000,4000])
+            #pl.xlim(0,4000)
+            pl.xlim(0,7000)
 
-            pl.ylim(3000,0)
+            #pl.ylim(3000,0)
+            pl.ylim(1400,0)
             pl.ylabel("$z$ (m)")
-            pl.yticks([0,500,1000,1500,2000,2500,3000])
+            #pl.yticks([0,500,1000,1500,2000,2500,3000])
 
             # Colorbar
             cb = pl.colorbar(image,

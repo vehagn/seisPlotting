@@ -2,7 +2,6 @@
 import rsf.api as rsf
 import numpy as np
 import pylab as pl
-import sys as sysi
 import os
 #import matplotlib.pyplot as mpl
 
@@ -10,10 +9,10 @@ def normalize(x):
     if x.max() != x.min():
         return (x - x.min())/(x.max()-x.min())
     else:
-        return (x - x.min())
+        return (x)
 
-model = 'gullfaks/'
-pDir  = 'x'
+model = 'barn/homo/'
+pDir  = 'z'
 sLen  = 'short'
 
 
@@ -25,9 +24,9 @@ freq = ''
 
 
 if pDir == 'z':
-    zStart = 159
-    zStop  = 219
-    xStart = 500
+    zStart =  50 #159
+    zStop  =  140 #219
+    xStart = 350 #500
     xStop  = xStart
 elif pDir == 'x':
     zStart = 190
@@ -43,7 +42,7 @@ if not os.path.exists(save+part+freq+'/'):
     os.makedirs(save+part+freq+'/')
 
 dz = 10
-dx = 10
+dx = dz
 
 fin   = rsf.Input(modelFolder+'rh.rsf')
 [n,m] = fin.shape()
@@ -96,7 +95,7 @@ for k in range(0,nKern-2):
             for i in range(0,nParam):
                 for j in range(0,nPerts):
                     # Read data
-                    toRead = 'kernels/{}-{}-delta_{}-z{}-x{}.rsf'.format(kernel[k],param[i],perts[j],zPos[n],xPos[m])
+                    toRead = 'kernels/{0}-{1}-delta_{2}-z{3:04d}-x{4:04d}.rsf'.format(kernel[k],param[i],perts[j],zPos[n],xPos[m])
                     #print toRead
                     fin = rsf.Input(folder+toRead)
                     fin.read(data)
@@ -146,9 +145,10 @@ pl.rc('text', usetex=True)
 
 for k in [ 0, 1, 2, 3, 4]:
     # Scale by row
-    sc = 1.0
+    sc = 10
+    print np.max(np.abs(Hess[i*nLen:(i+1)*nLen,:,k]))
     for i in range(0,nParam):
-        Hess[i*nLen:(i+1)*nLen,:,k] = sc*Hess[i*nLen:(i+1)*nLen,:,k]/(np.max(np.abs(Hess[i*nLen:(i+1)*nLen,:,k])))
+        Hess[i*nLen:(i+1)*nLen,:,k] = sc*Hess[i*nLen:(i+1)*nLen,:,k]/(np.max(np.abs(Hess[i*nLen:(i+1)*nLen,:,k]))+1e-12)
 
     fig = pl.figure(figsize=(5,5))
     image = pl.imshow(Hess[:,:,k],interpolation='none')

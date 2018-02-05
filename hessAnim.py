@@ -10,9 +10,11 @@ from subprocess import call
 
 direction = 'z'
 offset    = 'short'
-cLim      = 0.00005
+cLim      = 0.05 #0.00005
+normalise = 1
 
-baseFolder  = '/home/vegahag/msim-ext/AGU2017/gullfaks/'
+
+baseFolder  = '/home/vegahag/msim-ext/AGU2017/barn/homo/'
 simFolder   = 'vp_8Hz-{}dir-{}/'.format(direction,offset)
 
 print 'Direction: {}\tOffset: {}\tcLim: {}'.format(direction,offset,cLim)
@@ -29,11 +31,11 @@ if direction == 'x':
     zPos = range(190,191) #(190,191) (159,220)
     xPos = range(469,530) #(469,530) (500,501)
 elif direction == 'z':
-    zPos = range(159,220)
-    xPos = range(500,501)
+    zPos = range( 50,140)#range(159,220)
+    xPos = range(350,351) #range(500,501)
 
 if offset == 'short':
-    sPos = [499,501]
+    sPos = [349,349] #[499,501]
 elif offset == 'long':
     sPos = [1,999]
 
@@ -42,7 +44,7 @@ t = max([len(zPos),len(xPos)])
 if not os.path.exists(saveFolder):
     os.makedirs(saveFolder)
 
-fin   = rsf.Input(dataFolder+fileName+'-z190-x500.rsf')
+fin   = rsf.Input(dataFolder+fileName+'-z100-x350.rsf') #rsf.Input(dataFolder+fileName+'-z190-x500.rsf')
 [n,m] = fin.shape()
 
 data  = np.zeros([n,m],'f')
@@ -87,13 +89,14 @@ for h in [1,2,3]:
                 for j in xPos:
                     #print 'Frame {} of {}'.format(it,t)
                     data  = np.zeros([n,m],'f')
-                    fin = rsf.Input(dataFolder+fileName+'-z{:3d}-x{:3d}.rsf'.format(i,j))
+                    fin = rsf.Input(dataFolder+fileName+'-z{:2d}-x{:3d}.rsf'.format(i,j))
                     fin.read(data)
                     #data = np.array(data.transpose())
                     #print [it,h,param,pert]
+                    if normalise:
+                        data = data/np.max(np.abs(data)+np.finfo(float).eps) # Normalise data
                     Hessian[:,:,it,h,param,pert] = np.array(data.transpose())
                     #print '{}\t{:12.12e}'.format(fileName,np.max(np.abs(data)))
-                    #data = data/np.max(np.abs(data)+np.finfo(float).eps) # Normalise data
                     it += 1
 
 print 'Summing Hessian'
@@ -118,28 +121,30 @@ for h in [1,2,3,0]:
                     it += 1
 
                     fig = pl.figure()
-                    fig.set_size_inches(10,3)
+                    #fig.set_size_inches(10,3)
+                    fig.set_size_inches(7,1.4)
                     ax  = pl.Axes(fig, [0., 0., 1., 1.])
                     ax.set_axis_off()
                     fig.add_axes(ax)
 
-                    mod = ax.imshow(model,cmap='viridis') #terrain
+                    mod = ax.imshow(model,cmap='terrain') #terrain viridis
 
                     img = ax.imshow(data,interpolation='nearest', cmap=grayAlpha)
                     img.set_clim([-cLim,cLim])
 
-                    ptr = patches.Circle((j-1,i-1),10,linewidth=1,edgecolor='c',facecolor='none',alpha=0.5)
+                    ptr = patches.Circle((j-1,i-1),1,linewidth=1,edgecolor='c',facecolor='none',alpha=0.5)
                     ax.add_patch(ptr)
-                    inc = patches.Rectangle((499-5,189-5),10,10,linewidth=1,edgecolor='y',facecolor='none',alpha=0.5)
-                    ax.add_patch(inc)
+                    #inc = patches.Rectangle((499-5,189-5),10,10,linewidth=1,edgecolor='y',facecolor='none',alpha=0.5)
+                    #ax.add_patch(inc)
                     src = ax.plot(sPos,[3,3],'g^',alpha=0.8) #short: 499,501 long: 1,999
 
                     pPos = 'Perturbation: ({:d} m,{:d} m)'.format(10*j,10*i)
-                    ax.annotate(pPos, xy=(995,293), fontsize=15, color='black',horizontalalignment='right',fontweight='bold')
-                    ax.annotate(name, xy=( 25,293), fontsize=15, color='black',horizontalalignment='left',fontweight='bold')
+                    #ax.annotate(pPos, xy=(995,293), fontsize=15, color='black',horizontalalignment='right',fontweight='bold')
+                    #ax.annotate(name, xy=( 25,293), fontsize=15, color='black',horizontalalignment='left',fontweight='bold')
+                    ax.annotate(pPos, xy=(995,133), fontsize=15, color='black',horizontalalignment='right',fontweight='bold')
+                    ax.annotate(name, xy=( 25,133), fontsize=15, color='black',horizontalalignment='left',fontweight='bold')
 
-
-                    pl.savefig(saveFolder+fileName+'-z{:3d}-x{:3d}'.format(i,j)+'.png')
+                    pl.savefig(saveFolder+fileName+'-z{:03d}-x{:03d}'.format(i,j)+'.png')
                     pl.close()
                     #pl.show()
 
