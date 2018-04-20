@@ -54,7 +54,7 @@ if not os.path.exists(save):
 kernel = ['H1','H2','H3','H12','H123']
 param  = ['rh','vp','vs']
 perts  = ['rh','vp','vs']
-title  = ['$\mathbf{H_1}$','$\mathbf{H_2}$','$\mathbf{H_3}$','$\mathbf{H_1}+\mathbf{H_2}$','$\mathbf{H_1}+\mathbf{H_2}+\mathbf{H_3}$']
+title  = ['$\mathbf{H_1}$','$\mathbf{H_2}$','$\mathbf{H_3}$','$\mathbf{H_1}+\mathbf{H_2}$','$\mathbf{H}$']
 
 # plus one to get the correct indices
 yPos = np.arange(yStart,yStop)
@@ -66,7 +66,7 @@ nPerts = len(perts)
 nPos   = len(yPos)
 mPos   = len(xPos)
 nKern  = len(kernel)
-nLen   = np.maX([nPos,mPos])
+nLen   = np.max([nPos,mPos])
 hessian = np.zeros([nParam*nPos,nParam*nPos],'f')
 
 Hess    = np.zeros([nParam*nLen,nParam*nLen,nKern],'f')
@@ -75,8 +75,6 @@ print 'Starting to read data.'
 # Read in data
 for k in range(0,nKern-2):
     for n in range(0,nPos):
-        if (n%10==0):
-            print n
         for m in range(0,mPos):
             for i in range(0,nParam):
                 for j in range(0,nPerts):

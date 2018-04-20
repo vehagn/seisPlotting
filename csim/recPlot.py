@@ -17,7 +17,7 @@ dt = 0.001;
 pclip = .1;
 tpow  = 1.8
 
-model = 'Grad0km/'
+model = 'Gull0km/'
 project = '/home/vegahag/msim-ext/SEG2018/'+model
 save = 'SEG2018/'+model
 

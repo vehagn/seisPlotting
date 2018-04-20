@@ -15,7 +15,7 @@ dy = 20.0;
 
 par  = 'vp'
 pert = 'vp'
-pos  = ny/2
+pos  = 125
 
 vLim = 0.03
 
@@ -37,9 +37,9 @@ modelFolder = project
 if not os.path.exists(save):
     os.makedirs(save)
 
-H1 = abp.read_data_2d(modelFolder+"H1-"+par+"-d"+pert+"-0"+str(pos)+".bin",nx,ny);
-H2 = abp.read_data_2d(modelFolder+"H2-"+par+"-d"+pert+"-0"+str(pos)+".bin",nx,ny);
-H3 = abp.read_data_2d(modelFolder+"H3-"+par+"-d"+pert+"-0"+str(pos)+".bin",nx,ny);
+H1 = abp.read_data_2d(modelFolder+"H1-"+par+"-d"+pert+"-"+'{0:03.0f}'.format(pos)+".bin",nx,ny);
+H2 = abp.read_data_2d(modelFolder+"H2-"+par+"-d"+pert+"-"+'{0:03.0f}'.format(pos)+".bin",nx,ny);
+H3 = abp.read_data_2d(modelFolder+"H3-"+par+"-d"+pert+"-"+'{0:03.0f}'.format(pos)+".bin",nx,ny);
 vp = abp.read_data_2d(modelFolder+"vp-true.bin",nx,ny);
 
 Hess = np.zeros([ny,nx,4],'f')
@@ -65,7 +65,6 @@ nParam = len(param)
 
 maxAbs = abs(Hess).max()
 Hess = Hess/maxAbs
-
 
 # Choose colormap
 cmapBase = pl.cm.RdBu
@@ -110,6 +109,5 @@ for i in range(0,nParam):
 
     pl.xlim([0,nx*dx]);
     pl.ylim([ny*dy,0]);
-
-    pl.savefig(save+param[i]+'-'+par+'-d'+pert+'.pdf',bbox_inches='tight')
+    pl.savefig(save+param[i]+'-'+par+'-d'+pert+'-'+'{0:03.0f}'.format(pos*dy)+'m.pdf',bbox_inches='tight')
     #pl.show()
